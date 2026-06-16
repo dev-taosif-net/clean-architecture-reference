@@ -1,9 +1,8 @@
-using CleanArchitectureReference.Application.Restaurants.Dtos;
 using CleanArchitectureReference.Application.Restaurants.Mappings;
-using CleanArchitectureReference.Domain.Repositories;
-using MediatR;
 
-namespace CleanArchitectureReference.Application.Restaurants.Queries.GetRestaurantById;
+namespace CleanArchitectureReference.Application.Restaurants.Queries;
+
+public record GetRestaurantByIdQuery(Guid Id) : IRequest<RestaurantDto?>;
 
 public class GetRestaurantByIdQueryHandler(IRestaurantRepository repository)
     : IRequestHandler<GetRestaurantByIdQuery, RestaurantDto?>

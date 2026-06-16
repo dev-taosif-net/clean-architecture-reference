@@ -1,5 +1,4 @@
-using CleanArchitectureReference.Application.Restaurants.Queries.GetAllRestaurants;
-using CleanArchitectureReference.Application.Restaurants.Queries.GetRestaurantById;
+using CleanArchitectureReference.Application.Restaurants.Queries;
 using MediatR;
 
 namespace CleanArchitectureReference.Api.Endpoints;

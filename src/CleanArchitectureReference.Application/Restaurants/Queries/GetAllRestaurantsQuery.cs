@@ -1,9 +1,8 @@
-using CleanArchitectureReference.Application.Restaurants.Dtos;
 using CleanArchitectureReference.Application.Restaurants.Mappings;
-using CleanArchitectureReference.Domain.Repositories;
-using MediatR;
 
-namespace CleanArchitectureReference.Application.Restaurants.Queries.GetAllRestaurants;
+namespace CleanArchitectureReference.Application.Restaurants.Queries;
+
+public record GetAllRestaurantsQuery : IRequest<IReadOnlyList<RestaurantDto>>;
 
 public class GetAllRestaurantsQueryHandler(IRestaurantRepository repository)
     : IRequestHandler<GetAllRestaurantsQuery, IReadOnlyList<RestaurantDto>>
