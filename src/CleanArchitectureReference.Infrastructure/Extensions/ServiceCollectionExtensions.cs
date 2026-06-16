@@ -3,7 +3,6 @@ using CleanArchitectureReference.Infrastructure.Common;
 using CleanArchitectureReference.Infrastructure.Persistence;
 using CleanArchitectureReference.Infrastructure.Persistence.Interceptors;
 using CleanArchitectureReference.Infrastructure.Seeders;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
