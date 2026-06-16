@@ -1,8 +1,7 @@
 ﻿namespace CleanArchitectureReference.Domain.Entities;
 
-public class Restaurant
+public class Restaurant : AuditableEntity<Guid>
 {
-    public int Id { get; set; }
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
     public string Category { get; set; } = null!;
