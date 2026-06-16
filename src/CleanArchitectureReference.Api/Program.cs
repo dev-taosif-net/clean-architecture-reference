@@ -17,8 +17,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
-    app.MapGet("/", () => Results.Redirect("/swagger"));
 }
 
 using (var scope = app.Services.CreateScope())
@@ -27,6 +25,8 @@ using (var scope = app.Services.CreateScope())
     await seeder.SeedAsync();
 }
 
-app.MapRestaurantEndpoints();
+var apiGroup = app.MapGroup("/api");
+
+apiGroup.MapRestaurantEndpoints();
 
 app.Run();
