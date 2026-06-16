@@ -1,17 +1,32 @@
+using CleanArchitectureReference.Api.Endpoints;
+using CleanArchitectureReference.Application;
 using CleanArchitectureReference.Infrastructure.Extensions;
 using CleanArchitectureReference.Infrastructure.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-var scope = app.Services.CreateScope();
-var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 
-await seeder.SeedAsync();
+    app.MapGet("/", () => Results.Redirect("/swagger"));
+}
 
-app.MapGet("/", () => "Hello World!");
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
+    await seeder.SeedAsync();
+}
+
+app.MapRestaurantEndpoints();
 
 app.Run();

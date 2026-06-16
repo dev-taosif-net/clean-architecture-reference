@@ -1,0 +1,25 @@
+using CleanArchitectureReference.Application.Restaurants.Queries.GetAllRestaurants;
+using CleanArchitectureReference.Application.Restaurants.Queries.GetRestaurantById;
+using MediatR;
+
+namespace CleanArchitectureReference.Api.Endpoints;
+
+public static class RestaurantEndpoints
+{
+    public static IEndpointRouteBuilder MapRestaurantEndpoints(this IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/restaurants");
+
+        group.MapGet("/", async (ISender sender, CancellationToken cancellationToken) =>
+            Results.Ok(await sender.Send(new GetAllRestaurantsQuery(), cancellationToken)));
+
+        group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
+        {
+            var restaurant = await sender.Send(new GetRestaurantByIdQuery(id), cancellationToken);
+
+            return restaurant is null ? Results.NotFound() : Results.Ok(restaurant);
+        });
+
+        return app;
+    }
+}

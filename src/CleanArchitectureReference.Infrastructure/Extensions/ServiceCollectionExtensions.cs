@@ -1,7 +1,9 @@
 ﻿using CleanArchitectureReference.Application.Common.Abstractions;
+using CleanArchitectureReference.Domain.Repositories;
 using CleanArchitectureReference.Infrastructure.Common;
 using CleanArchitectureReference.Infrastructure.Persistence;
 using CleanArchitectureReference.Infrastructure.Persistence.Interceptors;
+using CleanArchitectureReference.Infrastructure.Repositories;
 using CleanArchitectureReference.Infrastructure.Seeders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,7 @@ public static class ServiceCollectionExtensions
                     .AddInterceptors(sp.GetRequiredService<AuditableEntityInterceptor>()));
 
             services.AddScoped<IRestaurantSeeder, RestaurantSeeder>();
+            services.AddScoped<IRestaurantRepository, RestaurantRepository>();
 
             return services;
         }
