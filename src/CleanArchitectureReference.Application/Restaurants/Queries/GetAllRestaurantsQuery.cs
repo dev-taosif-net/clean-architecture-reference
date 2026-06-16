@@ -2,10 +2,10 @@ using CleanArchitectureReference.Domain.Entities;
 
 namespace CleanArchitectureReference.Application.Restaurants.Queries;
 
-public record GetAllRestaurantsQuery : IRequest<IReadOnlyList<RestaurantDto>>;
+public record GetAllRestaurantsQuery : IQuery<IReadOnlyList<RestaurantDto>>;
 
 public class GetAllRestaurantsQueryHandler(IRestaurantRepository repository)
-    : IRequestHandler<GetAllRestaurantsQuery, IReadOnlyList<RestaurantDto>>
+    : IQueryHandler<GetAllRestaurantsQuery, IReadOnlyList<RestaurantDto>>
 {
     private static readonly TypeAdapterConfig MappingConfig = CreateMappingConfig();
 

@@ -2,10 +2,10 @@ using CleanArchitectureReference.Domain.Entities;
 
 namespace CleanArchitectureReference.Application.Restaurants.Queries;
 
-public record GetRestaurantByIdQuery(Guid Id) : IRequest<RestaurantDto?>;
+public record GetRestaurantByIdQuery(Guid Id) : IQuery<RestaurantDto?>;
 
 public class GetRestaurantByIdQueryHandler(IRestaurantRepository repository)
-    : IRequestHandler<GetRestaurantByIdQuery, RestaurantDto?>
+    : IQueryHandler<GetRestaurantByIdQuery, RestaurantDto?>
 {
     private static readonly TypeAdapterConfig MappingConfig = CreateMappingConfig();
 
