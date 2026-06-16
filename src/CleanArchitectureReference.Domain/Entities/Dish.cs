@@ -8,5 +8,5 @@ public class Dish : AuditableEntity<int>
 
     public int? KiloCalories { get; set; }
 
-    public int RestaurantId { get; set; }
+    public Guid RestaurantId { get; set; }
 }
