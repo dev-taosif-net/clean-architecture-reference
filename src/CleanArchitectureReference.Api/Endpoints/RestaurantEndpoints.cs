@@ -32,6 +32,23 @@ public static class RestaurantEndpoints
             })
             .WithName("CreateRestaurant");
 
+        group.MapPut("/{id:guid}", async (
+                Guid id, UpdateRestaurantCommand command, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var updated = await sender.Send(command with { Id = id }, cancellationToken);
+
+                return updated ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("UpdateRestaurant");
+
+        group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var deleted = await sender.Send(new DeleteRestaurantCommand(id), cancellationToken);
+
+                return deleted ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("DeleteRestaurant");
+
         return app;
     }
 }

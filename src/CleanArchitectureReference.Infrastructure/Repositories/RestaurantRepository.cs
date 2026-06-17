@@ -22,4 +22,16 @@ public class RestaurantRepository(ApplicationDbContext dbContext) : IRestaurantR
         await dbContext.Restaurants.AddAsync(restaurant, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task UpdateAsync(Restaurant restaurant, CancellationToken cancellationToken = default)
+    {
+        dbContext.Restaurants.Update(restaurant);
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteAsync(Restaurant restaurant, CancellationToken cancellationToken = default)
+    {
+        dbContext.Restaurants.Remove(restaurant);
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
 }
