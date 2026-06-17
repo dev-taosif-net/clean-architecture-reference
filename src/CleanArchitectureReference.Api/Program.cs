@@ -1,7 +1,7 @@
 using CleanArchitectureReference.Api.Endpoints;
 using CleanArchitectureReference.Api.Handlers;
 using CleanArchitectureReference.Application;
-using CleanArchitectureReference.Infrastructure.Extensions;
+using CleanArchitectureReference.Infrastructure;
 using CleanArchitectureReference.Infrastructure.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
