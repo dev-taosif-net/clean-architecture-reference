@@ -16,4 +16,10 @@ public class RestaurantRepository(ApplicationDbContext dbContext) : IRestaurantR
             .Include(r => r.Dishes)
             .AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+
+    public async Task AddAsync(Restaurant restaurant, CancellationToken cancellationToken = default)
+    {
+        await dbContext.Restaurants.AddAsync(restaurant, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

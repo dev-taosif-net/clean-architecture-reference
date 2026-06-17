@@ -1,3 +1,4 @@
+using CleanArchitectureReference.Application.Restaurants.Commands;
 using CleanArchitectureReference.Application.Restaurants.Queries;
 using MediatR;
 
@@ -21,6 +22,15 @@ public static class RestaurantEndpoints
                 return restaurant is null ? Results.NotFound() : Results.Ok(restaurant);
             })
             .WithName("GetRestaurantById");
+
+        group.MapPost("/", async (
+                CreateRestaurantCommand command, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var id = await sender.Send(command, cancellationToken);
+
+                return Results.CreatedAtRoute("GetRestaurantById", new { id }, new { id });
+            })
+            .WithName("CreateRestaurant");
 
         return app;
     }

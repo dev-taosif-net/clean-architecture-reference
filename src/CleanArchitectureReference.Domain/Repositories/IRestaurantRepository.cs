@@ -7,4 +7,6 @@ public interface IRestaurantRepository
     Task<IReadOnlyList<Restaurant>> GetAllAsync(CancellationToken cancellationToken = default);
 
     Task<Restaurant?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    Task AddAsync(Restaurant restaurant, CancellationToken cancellationToken = default);
 }
