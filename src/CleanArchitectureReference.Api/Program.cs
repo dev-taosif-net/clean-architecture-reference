@@ -22,18 +22,17 @@ try
 
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
-
-    // builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
-    // builder.Services.AddProblemDetails();
-
+    
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    
+    builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
 
     var app = builder.Build();
 
     app.UseSerilogRequestLogging();
 
-    // app.UseExceptionHandler();
+    app.UseExceptionHandler(options => { });
 
     if (app.Environment.IsDevelopment())
     {

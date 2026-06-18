@@ -1,33 +1,68 @@
+using CleanArchitectureReference.Domain.Exceptions;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CleanArchitectureReference.Api.Handlers;
 
-public class ValidationExceptionHandler : IExceptionHandler
+public class ValidationExceptionHandler(ILogger<ValidationExceptionHandler> logger) : IExceptionHandler
 {
-    public async ValueTask<bool> TryHandleAsync(
-        HttpContext httpContext,
-        Exception exception,
-        CancellationToken cancellationToken)
+     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        if (exception is not ValidationException validationException)
+        logger.LogError(
+            "Error Message: {exceptionMessage}, Time of occurrence {time}",
+            exception.Message, DateTime.UtcNow);
+
+        (string Detail, string Title, int StatusCode) details = exception switch
         {
-            return false;
+            InternalServerException =>
+            (
+                exception.Message,
+                exception.GetType().Name,
+                httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError
+            ),
+            ValidationException =>
+            (
+                exception.Message,
+                exception.GetType().Name,
+                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest
+            ),
+            BadRequestException =>
+            (
+                exception.Message,
+                exception.GetType().Name,
+                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest
+            ),
+            NotFoundException =>
+            (
+                exception.Message,
+                exception.GetType().Name,
+                httpContext.Response.StatusCode = StatusCodes.Status404NotFound
+            ),
+            _ =>
+            (
+                exception.Message,
+                exception.GetType().Name,
+                httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError
+            )
+        };
+
+        var problemDetails = new ProblemDetails
+        {
+            Title = details.Title,
+            Detail = details.Detail,
+            Status = details.StatusCode,
+            Instance = httpContext.Request.Path
+        };
+
+        problemDetails.Extensions.Add("traceId", httpContext.TraceIdentifier);
+
+        if (exception is ValidationException validationException)
+        {
+            problemDetails.Extensions.Add("ValidationErrors", validationException.Errors);
         }
 
-        var errors = validationException.Errors
-            .GroupBy(failure => failure.PropertyName)
-            .ToDictionary(
-                group => group.Key,
-                group => group.Select(failure => failure.ErrorMessage).ToArray());
-
-        var problemDetails = TypedResults.ValidationProblem(
-            errors,
-            title: "One or more validation errors occurred.");
-
-        await problemDetails.ExecuteAsync(httpContext);
-
+        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken: cancellationToken);
         return true;
     }
 }
