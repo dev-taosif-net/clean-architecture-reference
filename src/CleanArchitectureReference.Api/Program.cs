@@ -3,36 +3,61 @@ using CleanArchitectureReference.Api.Handlers;
 using CleanArchitectureReference.Application;
 using CleanArchitectureReference.Infrastructure;
 using CleanArchitectureReference.Infrastructure.Seeders;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
-
-// builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
-// builder.Services.AddProblemDetails();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// app.UseExceptionHandler();
-
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    Log.Information("Starting up");
 
-using (var scope = app.Services.CreateScope())
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext());
+
+    builder.Services.AddApplication();
+    builder.Services.AddInfrastructure(builder.Configuration);
+
+    // builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
+    // builder.Services.AddProblemDetails();
+
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+
+    var app = builder.Build();
+
+    app.UseSerilogRequestLogging();
+
+    // app.UseExceptionHandler();
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
+        await seeder.SeedAsync();
+    }
+
+    var apiGroup = app.MapGroup("/api");
+
+    apiGroup.MapRestaurantEndpoints();
+
+    app.Run();
+}
+catch (Exception ex)
 {
-    var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
-    await seeder.SeedAsync();
+    Log.Fatal(ex, "Application terminated unexpectedly");
 }
-
-var apiGroup = app.MapGroup("/api");
-
-apiGroup.MapRestaurantEndpoints();
-
-app.Run();
+finally
+{
+    Log.CloseAndFlush();
+}
