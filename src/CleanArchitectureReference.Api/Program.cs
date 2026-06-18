@@ -26,7 +26,7 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     
-    builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
+    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
     var app = builder.Build();
 

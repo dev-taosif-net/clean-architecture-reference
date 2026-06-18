@@ -1,3 +1,5 @@
+using CleanArchitectureReference.Domain.Entities;
+using CleanArchitectureReference.Domain.Exceptions;
 using CleanArchitectureReference.Domain.ValueObjects;
 using FluentValidation;
 
@@ -13,19 +15,15 @@ public record UpdateRestaurantCommand(
     string? ContactNumber,
     string? City,
     string? Street,
-    string? PostalCode) : ICommand<bool>;
+    string? PostalCode) : ICommand;
 
 public class UpdateRestaurantCommandHandler(IRestaurantRepository repository)
-    : ICommandHandler<UpdateRestaurantCommand, bool>
+    : ICommandHandler<UpdateRestaurantCommand>
 {
-    public async Task<bool> Handle(UpdateRestaurantCommand request, CancellationToken cancellationToken)
+    public async Task Handle(UpdateRestaurantCommand request, CancellationToken cancellationToken)
     {
-        var restaurant = await repository.GetByIdAsync(request.Id, cancellationToken);
-
-        if (restaurant is null)
-        {
-            return false;
-        }
+        var restaurant = await repository.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new NotFoundException(nameof(Restaurant), request.Id);
 
         restaurant.Name = request.Name;
         restaurant.Description = request.Description;
@@ -36,8 +34,6 @@ public class UpdateRestaurantCommandHandler(IRestaurantRepository repository)
         restaurant.Address = CreateAddress(request);
 
         await repository.UpdateAsync(restaurant, cancellationToken);
-
-        return true;
     }
 
     private static Address? CreateAddress(UpdateRestaurantCommand request)

@@ -16,11 +16,7 @@ public static class RestaurantEndpoints
             .WithName("GetAllRestaurants");
 
         group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
-            {
-                var restaurant = await sender.Send(new GetRestaurantByIdQuery(id), cancellationToken);
-
-                return restaurant is null ? Results.NotFound() : Results.Ok(restaurant);
-            })
+                Results.Ok(await sender.Send(new GetRestaurantByIdQuery(id), cancellationToken)))
             .WithName("GetRestaurantById");
 
         group.MapPost("/", async (
@@ -35,17 +31,17 @@ public static class RestaurantEndpoints
         group.MapPut("/{id:guid}", async (
                 Guid id, UpdateRestaurantCommand command, ISender sender, CancellationToken cancellationToken) =>
             {
-                var updated = await sender.Send(command with { Id = id }, cancellationToken);
+                await sender.Send(command with { Id = id }, cancellationToken);
 
-                return updated ? Results.NoContent() : Results.NotFound();
+                return Results.NoContent();
             })
             .WithName("UpdateRestaurant");
 
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
             {
-                var deleted = await sender.Send(new DeleteRestaurantCommand(id), cancellationToken);
+                await sender.Send(new DeleteRestaurantCommand(id), cancellationToken);
 
-                return deleted ? Results.NoContent() : Results.NotFound();
+                return Results.NoContent();
             })
             .WithName("DeleteRestaurant");
 

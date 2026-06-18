@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CleanArchitectureReference.Api.Handlers;
 
-public class ValidationExceptionHandler(ILogger<ValidationExceptionHandler> logger) : IExceptionHandler
+public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
      public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
