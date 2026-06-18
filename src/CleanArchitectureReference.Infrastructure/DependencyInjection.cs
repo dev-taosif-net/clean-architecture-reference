@@ -24,6 +24,7 @@ public static class DependencyInjection
 
         services.AddScoped<IRestaurantSeeder, RestaurantSeeder>();
         services.AddScoped<IRestaurantRepository, RestaurantRepository>();
+        services.AddScoped<IDishRepository, DishRepository>();
 
         return services;
     }

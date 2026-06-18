@@ -49,6 +49,7 @@ try
     var apiGroup = app.MapGroup("/api");
 
     apiGroup.MapRestaurantEndpoints();
+    apiGroup.MapDishEndpoints();
 
     app.Run();
 }
