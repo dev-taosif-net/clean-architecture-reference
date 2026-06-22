@@ -7,10 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\CleanArchitectureReference.Application\CleanArchitectureReference.Application.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.9" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.9" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.9">
         <PrivateAssets>all</PrivateAssets>

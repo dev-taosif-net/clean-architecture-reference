@@ -22,6 +22,14 @@ public static class DependencyInjection
                 .UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
                 .AddInterceptors(sp.GetRequiredService<AuditableEntityInterceptor>()));
 
+        services.AddDbContext<AuthDbContext>(options =>
+            options.UseSqlServer(
+                configuration.GetConnectionString("DefaultConnection"),
+                sql => sql.MigrationsHistoryTable("__AuthMigrationsHistory", "auth")));
+
+        services.AddIdentityApiEndpoints<User>()
+            .AddEntityFrameworkStores<AuthDbContext>();
+
         services.AddScoped<IRestaurantSeeder, RestaurantSeeder>();
         services.AddScoped<IRestaurantRepository, RestaurantRepository>();
         services.AddScoped<IDishRepository, DishRepository>();

@@ -1,5 +1,8 @@
 using CleanArchitectureReference.Api.Endpoints;
+using CleanArchitectureReference.Domain.Entities;
+using CleanArchitectureReference.Infrastructure.Persistence;
 using CleanArchitectureReference.Infrastructure.Seeders;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace CleanArchitectureReference.Api.Extensions;
@@ -18,6 +21,8 @@ public static class WebApplicationExtensions
             app.UseSwaggerUI();
         }
 
+        app.UseHttpsRedirection();
+        
         return app;
     }
 
@@ -28,12 +33,19 @@ public static class WebApplicationExtensions
         apiGroup.MapRestaurantEndpoints();
         apiGroup.MapDishEndpoints();
 
+        apiGroup.MapGroup("/identity")
+            .WithTags("Identity")
+            .MapIdentityApi<User>();
+
         return app;
     }
 
     public static async Task<WebApplication> SeedDatabaseAsync(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
+
+        var authDbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+        await authDbContext.Database.MigrateAsync();
 
         var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
         await seeder.SeedAsync();
