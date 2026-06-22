@@ -5,6 +5,7 @@ using CleanArchitectureReference.Infrastructure.Persistence;
 using CleanArchitectureReference.Infrastructure.Persistence.Interceptors;
 using CleanArchitectureReference.Infrastructure.Repositories;
 using CleanArchitectureReference.Infrastructure.Seeders;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,8 +28,14 @@ public static class DependencyInjection
                 configuration.GetConnectionString("DefaultConnection"),
                 sql => sql.MigrationsHistoryTable("__AuthMigrationsHistory", "auth")));
 
-        services.AddIdentityApiEndpoints<User>()
-            .AddEntityFrameworkStores<AuthDbContext>();
+        services.AddAuthentication(IdentityConstants.BearerScheme)
+            .AddBearerToken(IdentityConstants.BearerScheme);
+
+        services.AddAuthorization();
+
+        services.AddIdentityCore<User>()
+            .AddEntityFrameworkStores<AuthDbContext>()
+            .AddApiEndpoints();
 
         services.AddScoped<IRestaurantSeeder, RestaurantSeeder>();
         services.AddScoped<IRestaurantRepository, RestaurantRepository>();
