@@ -1,8 +1,7 @@
-using CleanArchitectureReference.Api.Endpoints;
-using CleanArchitectureReference.Api.Handlers;
+using CleanArchitectureReference.Api;
+using CleanArchitectureReference.Api.Extensions;
 using CleanArchitectureReference.Application;
 using CleanArchitectureReference.Infrastructure;
-using CleanArchitectureReference.Infrastructure.Seeders;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -15,43 +14,22 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
-    builder.Host.UseSerilog((context, services, configuration) => configuration
-        .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services)
-        .Enrich.FromLogContext());
+    builder.Host.AddSerilogLogging();
 
-    builder.Services.AddApplication();
-    builder.Services.AddInfrastructure(builder.Configuration);
-    
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
-    
-    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+    builder.Services
+        .AddApplication()
+        .AddInfrastructure(builder.Configuration)
+        .AddPresentation();
 
     var app = builder.Build();
 
-    app.UseSerilogRequestLogging();
+    app.UsePresentation();
 
-    app.UseExceptionHandler(options => { });
+    await app.SeedDatabaseAsync();
 
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
+    app.MapEndpoints();
 
-    using (var scope = app.Services.CreateScope())
-    {
-        var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
-        await seeder.SeedAsync();
-    }
-
-    var apiGroup = app.MapGroup("/api");
-
-    apiGroup.MapRestaurantEndpoints();
-    apiGroup.MapDishEndpoints();
-
-    app.Run();
+    await app.RunAsync();
 }
 catch (Exception ex)
 {
